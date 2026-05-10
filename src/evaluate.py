@@ -213,6 +213,32 @@ def evaluate_prompt(
 
                 print(f"      [{i}/{len(examples)}] F1:{f1['score']:.2f} Clarity:{clarity['score']:.2f} Precision:{precision['score']:.2f}")
 
+                debug_low_scores = os.getenv("DEBUG_LOW_SCORES", "false").lower() == "true"
+                debug_threshold = float(os.getenv("DEBUG_SCORE_THRESHOLD", "0.90"))
+                has_low_score = (
+                    f1["score"] < debug_threshold
+                    or clarity["score"] < debug_threshold
+                    or precision["score"] < debug_threshold
+                )
+
+                if debug_low_scores and has_low_score:
+                    print("\n" + "-" * 70)
+                    print(f"DEBUG EXEMPLO {i}")
+                    print("-" * 70)
+                    print("\nBUG REPORT:")
+                    print(result["question"])
+                    print("\nRESPOSTA GERADA:")
+                    print(result["answer"])
+                    print("\nREFERÊNCIA:")
+                    print(result["reference"])
+                    print("\nF1 REASONING:")
+                    print(f1.get("reasoning", ""))
+                    print("\nCLARITY REASONING:")
+                    print(clarity.get("reasoning", ""))
+                    print("\nPRECISION REASONING:")
+                    print(precision.get("reasoning", ""))
+                    print("-" * 70 + "\n")
+
         avg_f1 = sum(f1_scores) / len(f1_scores) if f1_scores else 0.0
         avg_clarity = sum(clarity_scores) / len(clarity_scores) if clarity_scores else 0.0
         avg_precision = sum(precision_scores) / len(precision_scores) if precision_scores else 0.0
