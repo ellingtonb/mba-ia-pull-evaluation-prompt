@@ -33,8 +33,8 @@ bug_to_user_story_v2:
         - passos de reprodução;
         - impacto em usuários, suporte, receita, churn, NPS, rating ou operação;
         - severidade, vazamento de dados, perda de dados, crash, timeout e risco de negócio.
-    12. Para bugs simples, não inclua contexto técnico nem seções adicionais.
-    13. Para bugs médios, use User Story + Critérios de Aceitação + seções adicionais específicas.
+    12. Para bugs simples, use APENAS User Story e Critérios de Aceitação. Não crie Contexto do Bug, Contexto Técnico ou outras seções sob nenhuma hipótese.
+    13. Para bugs médios, use User Story + Critérios de Aceitação e adicione seções adicionais APENAS se explicitamente exigido nos PADRÕES ESSENCIAIS.
     14. Para bugs complexos/críticos, use obrigatoriamente:
         - User Story inicial;
         - === USER STORY PRINCIPAL ===;
@@ -47,12 +47,14 @@ bug_to_user_story_v2:
         - === MÉTRICAS DE SUCESSO === quando houver métricas atuais ou metas claras.
     15. Se o relato estiver vazio, incompreensível ou sem informação suficiente, responda exatamente:
         "Não foi possível gerar uma User Story porque o relato de bug está vazio ou não contém informações suficientes."
+    16. APLICAÇÃO OBRIGATÓRIA DE PADRÕES: Se o bug corresponder a um dos "PADRÕES ESSENCIAIS", você DEVE COPIAR EXATAMENTE os termos, critérios, métricas, valores (ex: 50 itens, 15 min) e soluções técnicas listados.
 
     ROTEAMENTO DE COMPLEXIDADE:
     - Use BUG SIMPLES quando houver apenas um problema direto, sem logs, sem endpoints, sem múltiplas causas e sem impacto crítico.
     - Use BUG MÉDIO quando houver um único tema principal com detalhes técnicos, segurança, endpoint, performance, cálculo, estoque, modal, webhook ou fluxo de reprodução.
     - Use BUG COMPLEXO/CRÍTICO somente quando houver 3 ou mais categorias diferentes de problema, por exemplo: segurança + integração + lógica de negócio + UX; ou performance + cache + dados inconsistentes + exportação; ou conflito + upload + ordenação + memória.
     - Não use o formato complexo para um único bug de segurança, webhook, performance, estoque, modal ou cálculo.
+    - IMPORTANTE: Para bugs de DASHBOARD, use sempre a persona "administrador visualizando o dashboard". Para relatórios de VENDAS, use "gerente de vendas". Para relatórios EXECUTIVOS, use "executivo usando o sistema de relatórios".
 
     FORMATO PARA BUG SIMPLES:
     Como [persona específica], eu quero [comportamento correto esperado], para que [benefício].
@@ -168,22 +170,22 @@ bug_to_user_story_v2:
     - segurança/API: "sistema";
     - offline/sync: "vendedor usando o app em campo".
 
-    PADRÕES ESSENCIAIS:
-    - Carrinho simples: generalize a User Story e os critérios para "produtos" ou "um produto". Não use "produto ID 1234" na resposta final.
-    - Email inválido: bloquear cadastro, mostrar mensagem de erro e explicar formato correto.
-    - iOS landscape: layout adaptado, elementos visíveis e alinhados, sem sobreposição.
-    - Safari: imagens carregam corretamente, mesma qualidade que outros navegadores e tempo similar.
-    - Dashboard: não fixe o valor atual como critério. Diga que o número exibido deve corresponder ao total real, atualizar em tempo real e incluir apenas usuários com status "ativo".
-    - Webhook: use formato médio. Inclua endpoint HTTP 200, mudança de status de "pendente" para "aprovado", confirmação ao cliente e log/auditoria.
-    - Relatório lento: quando houver >1000 registros ou timeout de 120s, defina performance esperada como menos de 30 segundos, sem timeout e consistente em horário de pico. Inclua falta de índice em data_venda e sugestão de adicionar índice e otimizar query SQL.
-    - Segurança API: use formato médio. Usuário comum recebe HTTP 403 Forbidden; apenas acessa seus próprios dados; admins acessam todos com HTTP 200; acesso de admin deve ser registrado em log de auditoria; inclua severidade, dados expostos e ação para implementar middleware de autorização.
-    - Cálculo de desconto: use persona "vendedor gerenciando oportunidades no pipeline"; inclua obrigatoriamente fórmula, detalhamento com subtotal/desconto/total, "Exemplo de Cálculo" e "Contexto Técnico".
-    - Android notificações: inclua obrigatoriamente carregar em menos de 2 segundos, sem congelamento, sem ANR, paginação com 20 itens por vez, background thread, RecyclerView com ViewHolder pattern, scroll infinito e contexto com ANR após 50+ itens.
-    - Estoque: use persona "sistema de e-commerce"; validar estoque em tempo real no checkout, bloquear sem estoque, exibir mensagem clara, sugerir remover/aguardar, aviso "estoque limitado" e reserva temporária de 15 minutos ao ir para checkout.
-    - Modal: inclua obrigatoriamente Critérios de Acessibilidade e Contexto Técnico. Deve mencionar backdrop, foco no modal, ESC, clique fora, pelo menos 90% da largura, z-index modal (1000) < z-index menu (1050), solução > 1050 e devices afetados mobile/tablets (< 768px).
-    - Checkout crítico: use formato complexo completo. Separar obrigatoriamente Segurança - Proteção contra XSS, Integração - Processamento confiável de pagamento, Lógica de Negócio - Controle atômico de cupons e UX - Feedback claro sobre status. Incluir sanitização, texto plano, retry com backoff, não cobrar múltiplas vezes, pedido criado se pagamento aprovado, lock otimista/pessimista, limite de 100 usos, mensagem "cupom esgotado", mensagens "Processando pagamento, por favor aguarde..." e "Estamos verificando seu pagamento", opção "Consultar Status" ou "Tentar Novamente", Critérios Técnicos e Tasks Técnicas Sugeridas.
-    - Relatórios complexos: use formato complexo completo. Separar obrigatoriamente Performance - Dashboard carrega em menos de 3 segundos, Dados Consistentes - MRR igual em todas as fontes, Cache Inteligente - Dados sempre atualizados e Exportação Assíncrona - CSV não trava servidor. Incluir SLA de 3s, database CPU abaixo de 70%, empresas com até 10.000 usuários, MRR idêntico, regra de negócio documentada, assinaturas ativas + pró-rata de mudanças, cache invalidado em até 30 segundos, dados críticos com cache máximo de 5 minutos, exportação em background, notificação ao concluir, outras requisições não afetadas e servidor abaixo de 80% de memória. Em Critérios Técnicos, incluir resolver N+1, cálculo MRR centralizado, estratégia de cache e background jobs.
-    - Sync offline: use formato complexo completo. Separar obrigatoriamente Conflitos - Resolução inteligente com aviso ao usuário, Upload Resiliente - Retomada de upload de anexos grandes, Ordenação Garantida - Operações aplicadas na ordem correta e Sincronização em Lote - Sem crash com muitos itens pendentes. Incluir backup da versão conflitante, notificação de ambos os usuários, escolha manual, anexo de 50MB, checkpoints a cada 5MB, retomada do último checkpoint, progresso em tempo real, falha após 5 tentativas mantendo na fila e avisando o usuário, timestamp do cliente, ordem cronológica, operações create/update/delete atômicas, 1.500 operações pendentes, lotes de 50 itens, liberar memória entre lotes, memória abaixo de 500MB, progresso "Sincronizando 150/1500" e pausar/retomar. Em Critérios Técnicos, incluir CRDTs ou Vector Clocks, Chunked Upload, Operation Log, Batch Processing, streaming/GC. Em Métricas de Sucesso, incluir perda de dados → 0, crash rate < 1%, NPS > 7.5, sync success rate > 99%, tempo de sync < 60s e memória < 500MB quando aplicável.
+    PADRÕES ESSENCIAIS (Obrigatório copiar EXATAMENTE os termos, critérios e valores abaixo se o bug corresponder):
+    - [SIMPLES] Carrinho: generalize para "produtos" ou "um produto". Não cite ID.
+    - [SIMPLES] Email inválido: exibir mensagem de erro, impedir prosseguir com cadastro, a mensagem deve explicar o formato correto.
+    - [SIMPLES] iOS landscape: o layout deve se adaptar corretamente, elementos devem permanecer visíveis e alinhados, não deve haver sobreposição de componentes.
+    - [SIMPLES] Safari: imagens devem carregar corretamente, com a mesma qualidade que em outros navegadores e o tempo de carregamento deve ser similar.
+    - [SIMPLES] Dashboard: persona "administrador visualizando o dashboard". O número exibido deve corresponder ao total real, ser atualizado em tempo real e deve incluir apenas usuários com status "ativo". NÃO adicione Contexto do Bug.
+    - [MÉDIO] Webhook: endpoint HTTP 200, o status do pedido deve mudar de "pendente" para "aprovado", cliente deve receber email de confirmação, e o sistema deve logar o evento para auditoria.
+    - [MÉDIO] Relatório lento: performance gerada em menos de 30 segundos, não deve ocorrer timeout no navegador, desempenho consistente em horário de pico. Adicione "Contexto Técnico" sobre falta de índice em data_venda e sugerindo otimizar query SQL.
+    - [MÉDIO] Segurança API: User story para "sistema". Usuário comum recebe HTTP 403 Forbidden e acessa apenas seus próprios dados. Administradores acessam dados de todos. Adicione "Critérios Adicionais para Admins" informando que recebem dados com HTTP 200 e o acesso deve ser registrado em log de auditoria. Adicione "Contexto de Segurança" sobre Quebra de controle de acesso (OWASP A01:2021) e middleware de autorização.
+    - [MÉDIO] Cálculo de desconto: persona "vendedor gerenciando oportunidades no pipeline". Fórmula no critério, detalhamento de subtotal/desconto/total, criar "Exemplo de Cálculo" e "Contexto Técnico".
+    - [MÉDIO] Android notificações: carregar em < 2 segundos, sem congelamento da interface e sem ANR. Criar "Critérios Técnicos" com paginação (20 itens), background thread, RecyclerView com ViewHolder pattern e scroll infinito. Contexto do Bug apontando ANR.
+    - [MÉDIO] Estoque: persona "sistema de e-commerce". Validar estoque disponível em tempo real no checkout, bloquear a compra se fora de estoque, exibir mensagem clara sobre indisponibilidade, sugerir remover o item ou aguardar reposição. Criar "Critérios de Prevenção" com aviso "estoque limitado" ao adicionar e reservar estoque temporariamente (15 minutos) ao ir para checkout.
+    - [MÉDIO] Modal: Criar "Critérios de Acessibilidade" (foco no teclado, fechar com ESC, backdrop deve fechar ao clicar fora) e "Contexto Técnico" (z-index modal > 1050, largura pelo menos 90%, devices mobile e tablets < 768px).
+    - [COMPLEXO] Relatórios gerenciais SaaS: persona "usuário executivo (CEO, CFO, VP)". Critérios de Aceitação cobrem: Performance (< 3 segundos, database CPU < 70%, até 10.000 usuários), Dados Consistentes (MRR idêntico em todas as fontes, regra acordada, assinaturas ativas + pró-rata), Cache Inteligente (atualizado em até 30s, invalidado automaticamente, máx 5min para dados críticos), Exportação Assíncrona (processar em background, receber notificação, não afetar outras requisições, memória < 80%). Critérios Técnicos: resolver N+1 (eager loading com JOIN), função centralizada calculateMRR(), estratégia de cache híbrida (curto 5min, longo 1h) e job queue (Sidekiq/Bull, streaming com 1000 linhas por chunk).
+    - [COMPLEXO] Checkout crítico: persona "cliente do e-commerce". Critérios de Aceitação cobrem: Segurança (sanitizar entrada, não executar scripts, exibir apenas texto plano), Integração (processar em até 30 segundos, retry com backoff se timeout, não cobrar múltiplas vezes, pedido DEVE ser criado se aprovado), Lógica de Negócio (lock otimista/pessimista, apenas 100 usos, mensagem "cupom esgotado"), UX (msg "Processando pagamento...", se timeout "Estamos verificando...", opção "Consultar Status", NUNCA ficar com loading infinito). Critérios Técnicos: DOMPurify, Content Security Policy headers, aumentar connection pool do Postgres, circuit breaker, transação SQL com SELECT FOR UPDATE ou Redis INCR, idempotency key, polling de status e webhook assíncrono.
+    - [COMPLEXO] Sync offline: persona "usuário mobile trabalhando frequentemente offline". Critérios de Aceitação cobrem: Conflitos (cópia de backup da versão conflitante, notificar ambos, permitir escolher qual versão manter manualmente), Upload Resiliente (checkpoints a cada 5MB, retomar do último checkpoint, mostrar progresso, manter na fila e avisar usuário após 5 tentativas), Ordenação (ordem cronológica, timestamp do cliente, operações atômicas), Sincronização em Lote (processar em lotes de 50 itens, liberar memória entre lotes, não ultrapassar 500MB, mostrar progresso e permitir pausar/retomar). Critérios Técnicos: CRDTs ou Vector Clocks (estratégia híbrida), Chunked Upload, Operation Log com timestamps, Batch Processing (SQLite, exponential backoff) e Streaming/Garbage Collection. Métricas: perda de dados → 0, crash rate < 1%, NPS > 7.5, sync success rate > 99%, tempo de sync < 60s, memória < 500MB.
 
     CHECKLIST FINAL DE COBERTURA:
     Antes de responder, verifique internamente se a resposta cobre todos os itens abaixo quando aplicáveis ao relato.
