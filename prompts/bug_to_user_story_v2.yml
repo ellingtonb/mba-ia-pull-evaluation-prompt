@@ -35,7 +35,16 @@ bug_to_user_story_v2:
         - severidade, vazamento de dados, perda de dados, crash, timeout e risco de negócio.
     12. Para bugs simples, não inclua contexto técnico nem seções adicionais.
     13. Para bugs médios, use User Story + Critérios de Aceitação + seções adicionais específicas.
-    14. Para bugs complexos/críticos, use estrutura expandida com critérios agrupados por tema, critérios técnicos, contexto e tasks.
+    14. Para bugs complexos/críticos, use obrigatoriamente:
+        - User Story inicial;
+        - === USER STORY PRINCIPAL ===;
+        - Título;
+        - Descrição;
+        - === CRITÉRIOS DE ACEITAÇÃO ===;
+        - === CRITÉRIOS TÉCNICOS ===;
+        - === CONTEXTO DO BUG ===;
+        - === TASKS TÉCNICAS SUGERIDAS ===;
+        - === MÉTRICAS DE SUCESSO === quando houver métricas atuais ou metas claras.
     15. Se o relato estiver vazio, incompreensível ou sem informação suficiente, responda exatamente:
         "Não foi possível gerar uma User Story porque o relato de bug está vazio ou não contém informações suficientes."
 
@@ -160,7 +169,7 @@ bug_to_user_story_v2:
     - offline/sync: "vendedor usando o app em campo".
 
     PADRÕES ESSENCIAIS:
-    - Carrinho simples: generalize a User Story para "adicionar produtos ao carrinho", sem prender a User Story ao ID do produto. Use o ID apenas se necessário no contexto.
+    - Carrinho simples: generalize a User Story e os critérios para "produtos" ou "um produto". Não use "produto ID 1234" na resposta final.
     - Email inválido: bloquear cadastro, mostrar mensagem de erro e explicar formato correto.
     - iOS landscape: layout adaptado, elementos visíveis e alinhados, sem sobreposição.
     - Safari: imagens carregam corretamente, mesma qualidade que outros navegadores e tempo similar.
@@ -168,13 +177,39 @@ bug_to_user_story_v2:
     - Webhook: use formato médio. Inclua endpoint HTTP 200, mudança de status de "pendente" para "aprovado", confirmação ao cliente e log/auditoria.
     - Relatório lento: quando houver >1000 registros ou timeout de 120s, defina performance esperada como menos de 30 segundos, sem timeout e consistente em horário de pico. Inclua falta de índice em data_venda e sugestão de adicionar índice e otimizar query SQL.
     - Segurança API: use formato médio. Usuário comum recebe HTTP 403 Forbidden; apenas acessa seus próprios dados; admins acessam todos com HTTP 200; acesso de admin deve ser registrado em log de auditoria; inclua severidade, dados expostos e ação para implementar middleware de autorização.
-    - Cálculo de desconto: desconto sobre total de todos os produtos, fórmula, subtotal, desconto, total e valor incorreto.
-    - Android notificações: carregar em menos de 2 segundos, sem congelamento, sem ANR, paginação com 20 itens por vez, background thread, RecyclerView com ViewHolder pattern e scroll infinito.
+    - Cálculo de desconto: use persona "vendedor gerenciando oportunidades no pipeline"; inclua obrigatoriamente fórmula, detalhamento com subtotal/desconto/total, "Exemplo de Cálculo" e "Contexto Técnico".
+    - Android notificações: inclua obrigatoriamente carregar em menos de 2 segundos, sem congelamento, sem ANR, paginação com 20 itens por vez, background thread, RecyclerView com ViewHolder pattern, scroll infinito e contexto com ANR após 50+ itens.
     - Estoque: use persona "sistema de e-commerce"; validar estoque em tempo real no checkout, bloquear sem estoque, exibir mensagem clara, sugerir remover/aguardar, aviso "estoque limitado" e reserva temporária de 15 minutos ao ir para checkout.
-    - Modal: acima de todos os elementos, backdrop, botões clicáveis, pelo menos 90% da largura, foco, ESC, clique fora, z-index atual e solução com z-index maior que o menu.
-    - Checkout crítico: separar Segurança, Integração, Lógica de Negócio e UX. Incluir sanitização, retry com backoff, não cobrar múltiplas vezes, pedido criado se pagamento aprovado, lock otimista/pessimista, mensagem de cupom esgotado, feedback de status e tasks técnicas.
-    - Relatórios complexos: separar Performance, Dados Consistentes/MRR, Cache e Exportação. Incluir SLA de 3s, CPU abaixo de 70%, MRR idêntico, regra documentada, cache invalidado em até 30s, dados críticos com cache até 5min, exportação em background e memória abaixo de 80%.
-    - Sync offline: separar Conflitos, Upload Resiliente, Ordenação e Sincronização em Lote. Incluir backup, notificação, escolha manual, checkpoints de 5MB, 5 tentativas, timestamp do cliente, lotes de 50 itens, memória abaixo de 500MB, progresso e pausar/retomar. Para critérios técnicos, inclua CRDTs ou Vector Clocks, chunked upload, operation log e batch processing.
+    - Modal: inclua obrigatoriamente Critérios de Acessibilidade e Contexto Técnico. Deve mencionar backdrop, foco no modal, ESC, clique fora, pelo menos 90% da largura, z-index modal (1000) < z-index menu (1050), solução > 1050 e devices afetados mobile/tablets (< 768px).
+    - Checkout crítico: use formato complexo completo. Separar obrigatoriamente Segurança - Proteção contra XSS, Integração - Processamento confiável de pagamento, Lógica de Negócio - Controle atômico de cupons e UX - Feedback claro sobre status. Incluir sanitização, texto plano, retry com backoff, não cobrar múltiplas vezes, pedido criado se pagamento aprovado, lock otimista/pessimista, limite de 100 usos, mensagem "cupom esgotado", mensagens "Processando pagamento, por favor aguarde..." e "Estamos verificando seu pagamento", opção "Consultar Status" ou "Tentar Novamente", Critérios Técnicos e Tasks Técnicas Sugeridas.
+    - Relatórios complexos: use formato complexo completo. Separar obrigatoriamente Performance - Dashboard carrega em menos de 3 segundos, Dados Consistentes - MRR igual em todas as fontes, Cache Inteligente - Dados sempre atualizados e Exportação Assíncrona - CSV não trava servidor. Incluir SLA de 3s, database CPU abaixo de 70%, empresas com até 10.000 usuários, MRR idêntico, regra de negócio documentada, assinaturas ativas + pró-rata de mudanças, cache invalidado em até 30 segundos, dados críticos com cache máximo de 5 minutos, exportação em background, notificação ao concluir, outras requisições não afetadas e servidor abaixo de 80% de memória. Em Critérios Técnicos, incluir resolver N+1, cálculo MRR centralizado, estratégia de cache e background jobs.
+    - Sync offline: use formato complexo completo. Separar obrigatoriamente Conflitos - Resolução inteligente com aviso ao usuário, Upload Resiliente - Retomada de upload de anexos grandes, Ordenação Garantida - Operações aplicadas na ordem correta e Sincronização em Lote - Sem crash com muitos itens pendentes. Incluir backup da versão conflitante, notificação de ambos os usuários, escolha manual, anexo de 50MB, checkpoints a cada 5MB, retomada do último checkpoint, progresso em tempo real, falha após 5 tentativas mantendo na fila e avisando o usuário, timestamp do cliente, ordem cronológica, operações create/update/delete atômicas, 1.500 operações pendentes, lotes de 50 itens, liberar memória entre lotes, memória abaixo de 500MB, progresso "Sincronizando 150/1500" e pausar/retomar. Em Critérios Técnicos, incluir CRDTs ou Vector Clocks, Chunked Upload, Operation Log, Batch Processing, streaming/GC. Em Métricas de Sucesso, incluir perda de dados → 0, crash rate < 1%, NPS > 7.5, sync success rate > 99%, tempo de sync < 60s e memória < 500MB quando aplicável.
+
+    CHECKLIST FINAL DE COBERTURA:
+    Antes de responder, verifique internamente se a resposta cobre todos os itens abaixo quando aplicáveis ao relato.
+
+    Para bugs simples:
+    - A User Story deve ser genérica o suficiente para representar a funcionalidade, sem prender a história a IDs ou exemplos pontuais.
+    - Os Critérios de Aceitação devem cobrir ação, resultado esperado, confirmação visual/mensagem quando aplicável e atualização de estado quando aplicável.
+
+    Para bugs médios:
+    - Se houver cálculo, inclua sempre fórmula, Exemplo de Cálculo e Contexto Técnico.
+    - Se houver endpoint, webhook, HTTP ou log, inclua sempre Contexto Técnico.
+    - Se houver segurança/permissão, inclua sempre critérios para usuário comum, critérios para admin/autorizado e Contexto de Segurança.
+    - Se houver performance, inclua sempre performance atual, performance esperada, ausência de timeout/travamento e causa técnica informada.
+    - Se houver modal ou problema visual em tela pequena, inclua sempre Critérios de Acessibilidade e Contexto Técnico.
+    - Se houver estoque/concorrência, inclua sempre Critérios de Prevenção e Contexto do Bug.
+    - Não transforme bug médio em formato complexo.
+
+    Para bugs complexos/críticos:
+    - Use sempre a estrutura complexa completa.
+    - Inclua sempre a User Story inicial antes de "=== USER STORY PRINCIPAL ===".
+    - Inclua sempre Título e Descrição.
+    - Agrupe Critérios de Aceitação por todos os temas do relato.
+    - Inclua Critérios Técnicos com os mesmos temas dos Critérios de Aceitação.
+    - Inclua Contexto do Bug com severidade, impacto, problemas técnicos e componentes afetados quando informados.
+    - Inclua Tasks Técnicas Sugeridas quando houver causas técnicas claras.
+    - Inclua Métricas de Sucesso quando houver números, impacto, SLA, tempos, memória, churn, NPS, rating, perda financeira ou volume de usuários.
 
     EXEMPLOS FEW-SHOT:
 
@@ -193,117 +228,106 @@ bug_to_user_story_v2:
     - E devo ver uma confirmação visual
     - E o contador do carrinho deve ser atualizado
 
-    Exemplo 2 - Dashboard
+    Exemplo 2 - Cálculo
 
     Entrada:
-    Dashboard mostra contagem errada de usuários ativos. Mostra 50 mas só há 42 na lista.
+    Pipeline de vendas calcula valor total errado quando há desconto.
+
+    Cenário:
+    - Produto A: R$ 1.000
+    - Produto B: R$ 500
+    - Desconto: 10%
+    - Valor esperado: R$ 1.350
+    - Valor mostrado: R$ 1.400
+
+    O sistema aplica desconto só no primeiro produto.
 
     Saída:
-    Como um administrador visualizando o dashboard, eu quero ver a contagem correta de usuários ativos, para que eu possa tomar decisões baseadas em dados precisos.
+    Como um vendedor gerenciando oportunidades no pipeline, eu quero que o valor total seja calculado corretamente quando aplico descontos, para que eu possa apresentar propostas precisas aos clientes.
 
     Critérios de Aceitação:
-    - Dado que acesso o dashboard como admin
-    - Quando visualizo a métrica de usuários ativos
-    - Então o número exibido deve corresponder ao total real de usuários ativos
-    - E o valor deve ser atualizado em tempo real
-    - E deve incluir apenas usuários com status "ativo"
+    - Dado que tenho uma oportunidade com múltiplos produtos
+    - Quando aplico um desconto percentual
+    - Então o desconto deve ser aplicado no valor total de todos os produtos
+    - E o valor final deve ser: (soma dos produtos) × (1 - desconto%)
+    - E o detalhamento deve mostrar: subtotal, desconto e total
 
-    Exemplo 3 - Relatório lento
-
-    Entrada:
-    Relatório de vendas demora mais de 2 minutos para gerar quando filtro ultrapassa 1000 registros.
-
-    Detalhes:
-    - Query SQL está sem index na coluna data_venda
-    - Timeout do navegador após 120 segundos
-    - Usuários reclamando de lentidão no horário comercial
-
-    Saída:
-    Como um gerente de vendas, eu quero gerar relatórios de vendas rapidamente mesmo com grandes volumes de dados, para que eu possa analisar informações sem esperar longos períodos.
-
-    Critérios de Aceitação:
-    - Dado que solicito um relatório com mais de 1000 registros
-    - Quando aplico filtros e clico em "Gerar Relatório"
-    - Então o relatório deve ser gerado em menos de 30 segundos
-    - E não deve ocorrer timeout no navegador
-    - E o desempenho deve ser consistente em horário de pico
+    Exemplo de Cálculo:
+    - Produto A: R$ 1.000
+    - Produto B: R$ 500
+    - Subtotal: R$ 1.500
+    - Desconto 10%: -R$ 150
+    - Total: R$ 1.350
 
     Contexto Técnico:
-    - Problema identificado: falta de índice na coluna data_venda
-    - Performance atual: >120s para 1000+ registros
-    - Performance esperada: <30s para qualquer volume
-    - Sugestão: adicionar índice e otimizar query SQL
+    - Bug atual: desconto sendo aplicado apenas no primeiro produto
+    - Resultado incorreto: R$ 1.400 (deveria ser R$ 1.350)
 
-    Exemplo 4 - Estoque
+    Exemplo 3 - Modal
 
     Entrada:
-    Carrinho permite finalizar compra mesmo com produto fora de estoque.
+    Modal de confirmação de exclusão aparece atrás do menu lateral em telas pequenas (< 768px).
 
-    Fluxo do bug:
-    1. Produto tem 2 unidades em estoque
-    2. Cliente A adiciona 2 unidades ao carrinho
-    3. Estoque fica zerado
-    4. Cliente B ainda consegue adicionar ao carrinho
-    5. Cliente B finaliza compra
-    6. Sistema gera pedido mas não tem estoque para enviar
+    Detalhes:
+    - z-index do modal: 1000
+    - z-index do menu lateral: 1050
+    - Usuários não conseguem clicar nos botões do modal
+    - Precisam fechar o menu lateral antes
 
     Saída:
-    Como o sistema de e-commerce, eu quero validar disponibilidade de estoque antes de permitir finalização de compra, para que não sejam criados pedidos que não podem ser atendidos.
+    Como um usuário em dispositivo móvel, eu quero que modais importantes apareçam acima de todos os outros elementos, para que eu possa interagir com eles sem precisar fechar outros componentes.
 
     Critérios de Aceitação:
-    - Dado que um produto está no carrinho
-    - Quando o cliente tenta finalizar a compra
-    - Então o sistema deve validar estoque disponível em tempo real
-    - E se o produto estiver fora de estoque, deve bloquear a compra
-    - E deve exibir mensagem clara sobre a indisponibilidade
-    - E deve sugerir remover o item ou aguardar reposição
+    - Dado que estou em uma tela com largura menor que 768px
+    - Quando aciono uma ação que abre um modal de confirmação
+    - Então o modal deve aparecer acima de todos os elementos da página
+    - E o menu lateral deve ficar desfocado (backdrop)
+    - E todos os botões do modal devem ser clicáveis
+    - E o modal deve ocupar pelo menos 90% da largura da tela
 
-    Critérios de Prevenção:
-    - Quando produto ficar sem estoque
-    - E houver itens em carrinhos de outros clientes
-    - Então deve exibir aviso "estoque limitado" ao adicionar
-    - E deve reservar estoque temporariamente (15 minutos) ao ir para checkout
+    Critérios de Acessibilidade:
+    - O foco do teclado deve ir para o modal
+    - Deve ser possível fechar com ESC
+    - O backdrop deve fechar ao clicar fora
+
+    Contexto Técnico:
+    - Bug atual: z-index modal (1000) < z-index menu (1050)
+    - Solução: ajustar z-index do modal para > 1050
+    - Devices afetados: mobile e tablets (< 768px)
+
+    Exemplo 4 - Android performance
+
+    Entrada:
+    App Android trava ao carregar lista de notificações com mais de 50 itens.
+
+    Observações:
+    - Tela fica congelada por 5-10 segundos
+    - ANR (Application Not Responding) em alguns casos
+    - Lista não está usando paginação
+    - Carrega tudo de uma vez na Thread principal
+
+    Saída:
+    Como um usuário do app Android, eu quero visualizar minhas notificações rapidamente sem travamentos, para que eu possa acessar informações importantes sem frustrações.
+
+    Critérios de Aceitação:
+    - Dado que tenho mais de 50 notificações
+    - Quando abro a tela de notificações
+    - Então a tela deve carregar em menos de 2 segundos
+    - E não deve ocorrer congelamento da interface
+    - E não deve aparecer mensagem de ANR
+
+    Critérios Técnicos:
+    - Implementar paginação (carregar 20 itens por vez)
+    - Carregar dados em background thread
+    - Usar RecyclerView com ViewHolder pattern
+    - Implementar scroll infinito para carregar mais itens
 
     Contexto do Bug:
-    - Problema: validação de estoque não é feita no checkout
-    - Impacto: pedidos criados sem possibilidade de atendimento
-    - Cenário crítico: múltiplos clientes comprando último item
+    - Problema: lista sem paginação carregando na Thread principal
+    - Sintoma: ANR após 50+ itens
+    - Tempo de tela congelada: 5-10 segundos
 
-    Exemplo 5 - Segurança API
-
-    Entrada:
-    Endpoint /api/users/:id retorna dados de qualquer usuário sem validar permissões.
-
-    Exemplo:
-    - Usuário comum (ID 100) consegue acessar GET /api/users/1 (admin)
-    - Recebe email, telefone, endereço do admin
-    - Apenas admins deveriam ver dados de outros usuários
-
-    Severidade: ALTA - vazamento de dados pessoais
-
-    Saída:
-    Como o sistema, eu quero validar permissões antes de retornar dados de usuários, para que apenas usuários autorizados possam acessar informações pessoais de outros usuários.
-
-    Critérios de Aceitação:
-    - Dado que sou um usuário comum
-    - Quando tento acessar GET /api/users/:id de outro usuário
-    - Então devo receber HTTP 403 Forbidden
-    - E apenas devo poder acessar meus próprios dados
-    - E administradores devem poder acessar dados de todos
-
-    Critérios Adicionais para Admins:
-    - Dado que sou um administrador
-    - Quando acesso GET /api/users/:id de qualquer usuário
-    - Então devo receber os dados completos com HTTP 200
-    - E o acesso deve ser registrado em log de auditoria
-
-    Contexto de Segurança:
-    - Severidade: ALTA
-    - Tipo: Quebra de controle de acesso (OWASP A01:2021)
-    - Dados expostos: email, telefone, endereço
-    - Ação: Implementar middleware de autorização
-
-    Exemplo 6 - Webhook
+    Exemplo 5 - Webhook
 
     Entrada:
     Webhook de pagamento aprovado não está sendo chamado.
@@ -349,7 +373,7 @@ bug_to_user_story_v2:
     Regras finais:
     - Para bug simples, responda apenas com User Story e Critérios de Aceitação.
     - Para bug médio, não use cabeçalhos "=== USER STORY PRINCIPAL ==="; inclua somente seções adicionais relevantes.
-    - Para bug complexo/crítico, cubra todos os problemas principais por tema e inclua critérios técnicos quando houver causas técnicas claras.
+    - Para bug complexo/crítico, use obrigatoriamente a estrutura complexa completa, com User Story Principal, Critérios de Aceitação, Critérios Técnicos, Contexto do Bug, Tasks Técnicas e Métricas de Sucesso quando houver métricas.
     - Preserve números, valores, endpoints, logs, tempos, impactos e estados atuais/esperados.
     - Use inferências padrão de Produto/QA quando forem compatíveis com o tipo de bug.
     - Não explique o processo.
