@@ -14,7 +14,7 @@ import os
 import sys
 from dotenv import load_dotenv
 from pathlib import Path
-from langchain import hub
+from langsmith import Client
 from langchain_core.prompts import ChatPromptTemplate
 from utils import load_yaml, check_env_vars, print_section_header, validate_prompt_structure
 
@@ -30,29 +30,22 @@ prompt_name = os.getenv("IMPROVED_PROMPT", "bug_to_user_story_v2")
 
 
 def push_prompt_to_langsmith(prompt_name: str, prompt_data: dict) -> bool:
-    """
-    Faz push do prompt otimizado para o LangSmith Hub (PÚBLICO).
-
-    Args:
-        prompt_name: Nome do prompt
-        prompt_data: Dados do prompt
-
-    Returns:
-        True se sucesso, False caso contrário
-    """
 
     try:
-        hub.push(
-            repo_full_name=f"{os.getenv('USERNAME_LANGSMITH_HUB')}/{prompt_name}",
-            new_repo_is_public=True,
-            new_repo_description=prompt_data.get('description', ''),
-            tags=prompt_data.get('tags', []),
+        client = Client()
+        repo_full_name = f"{os.getenv('USERNAME_LANGSMITH_HUB')}/{prompt_name}"
+
+        client.push_prompt(
+            repo_full_name,
             object=ChatPromptTemplate([
                 ("system", prompt_data.get('system_prompt', '')),
                 ("human", prompt_data.get('user_prompt', ''))
-            ])
+            ]),
+            is_public=True,
+            description=prompt_data.get('description', ''),
+            tags=prompt_data.get('tags', []),
         )
-        print(f"\n✅ Prompt '{os.getenv('USERNAME_LANGSMITH_HUB')}/{prompt_name}' publicado com sucesso!")
+        print(f"\n✅ Prompt '{repo_full_name}' publicado com sucesso!")
         return True
     except Exception as e:
         print(f"\n❌ Erro ao fazer push do prompt '{prompt_name}': {e}")
