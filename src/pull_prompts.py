@@ -13,7 +13,7 @@ import os
 import sys
 from pathlib import Path
 from dotenv import load_dotenv
-from langchain import hub
+from langsmith import Client
 from utils import save_yaml, check_env_vars, print_section_header
 
 
@@ -27,7 +27,11 @@ default_prompt_description = "Prompt para converter relatos de bugs em User Stor
 
 
 def pull_prompts_from_langsmith():
-    prompt = hub.pull(prompt_name)
+    client = Client()
+    prompt = client.pull_prompt(
+        prompt_identifier=prompt_name,
+        dangerously_pull_public_prompt=True
+    )
 
     print("Prompt carregado com sucesso do LangSmith Hub!")
 
