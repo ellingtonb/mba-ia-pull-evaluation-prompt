@@ -505,11 +505,10 @@ O prompt será salvo automaticamente no diretório `/prompts` localmente.
 ### 5. Otimização do Prompt
 
 No arquivo `prompts/bug_to_user_story_v2.yml` estão as otimizações do prompt com as técnicas abaixo aplicadas:
-   - **Chain of Thought (CoT)**: Instruir o modelo a "pensar passo a passo"
-   - **Tree of Thought**: Explorar múltiplos caminhos de raciocínio
-   - **Skeleton of Thought**: Estruturar a resposta em etapas claras
-   - **ReAct**: Raciocínio + Ação para tarefas complexas
    - **Role Prompting**: Definir persona e contexto detalhado
+   - **Few-shot Learning**: Incluir exemplos de entrada e saída para orientar o modelo
+   - **Skeleton of Thought**: Estruturar a resposta em etapas claras
+   - **Chain of Thought (Privado)**: Instruir o modelo a "pensar passo a passo" antes de responder
 
 ### 6. Push
 
